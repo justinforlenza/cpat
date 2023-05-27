@@ -7,7 +7,7 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "cpp-automate",
+    "productName": "CPAT",
     "version": "0.0.0"
   },
   "tauri": {
@@ -43,9 +43,9 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "cpp-automate",
-        "width": 800,
-        "height": 600
+        "title": "CPAT",
+        "width": 1024,
+        "height": 768
       }
     ]
   }

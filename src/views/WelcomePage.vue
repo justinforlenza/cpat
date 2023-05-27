@@ -1,35 +1,52 @@
 <script setup lang="ts">
-import { NButton, NText, NSpace, NGradientText, NAlert } from 'naive-ui'
+import { ref } from 'vue'
+
+import {
+  NButton,
+  NGradientText, NText,
+  NAlert, NSpace
+} from 'naive-ui'
+
+import CredentialsModal from '../components/CredentialsModal.vue'
+
+const showModal = ref(false)
+
 </script>
 
 <template>
-  <NSpace
+  <credentials-modal
+    :show="showModal"
+    @esc="showModal = false"
+    @mask-click="showModal = false"
+  />
+  <n-space
     id="WelcomePage"
     vertical
     align="center"
     justify="center"
     size="large"
   >
-    <NGradientText :size="42">
+    <n-gradient-text :size="42">
       CPAT
-    </NGradientText>
+    </n-gradient-text>
     <NText>Career Pathways Automation Tool</NText>
     <br>
-    <NButton
+    <n-button
       type="primary"
       size="large"
+      @click="showModal = true"
     >
       Get Started
-    </NButton>
+    </n-button>
     <br>
-    <NAlert
+    <n-alert
       title="Disclaimer"
       type="warning"
     >
-      The software provided is offered as-is, without any warranties or guarantees of any kind, either express or implied, including but not limited to the implied warranties of merchantability and fitness for a particular purpose.
+      This software is provided as-is, without any warranties or guarantees of any kind, either express or implied, including but not limited to the implied warranties of merchantability and fitness for a particular purpose.
       The use of this software is at your own risk and we shall not be held responsible for any loss of data, damages, or any other issues that may arise from the use of this software.
-    </NAlert>
-  </NSpace>
+    </n-alert>
+  </n-space>
 </template>
 
 <style>
