@@ -6,14 +6,21 @@ import {
   NP, NModal, NCard, NSpace
 } from 'naive-ui'
 
+import { useConfigStore } from '../store'
+import { storeToRefs } from 'pinia'
+
 const props = defineProps({
   show: Boolean
 })
 
-const emit = defineEmits(['esc', 'mask-click'])
+const emit = defineEmits(['esc', 'mask-click', 'update'])
+
+const configStore = useConfigStore()
+
+const { config } = storeToRefs(configStore)
 
 const formRules = {
-  username: {
+  email: {
     required: true,
     message: 'Email is required'
   },
@@ -25,7 +32,7 @@ const formRules = {
 
 const formRef = ref<FormInst | null>(null)
 const formValue = ref({
-  username: '',
+  email: '',
   password: ''
 })
 
@@ -33,8 +40,11 @@ const handleSubmit = () => {
   if (formRef.value !== null) {
     formRef.value.validate(async errors => {
       if (errors === undefined) {
-        // await settingsManager.set('username', formValue.value.username)
-        // await settingsManager.set('password', formValue.value.password)
+        await configStore.storeConfig({
+          ...config.value,
+          creds: formValue.value
+        })
+        emit('update')
       }
     })
   }
@@ -65,10 +75,10 @@ const handleSubmit = () => {
       >
         <n-form-item
           label="Email"
-          path="username"
+          path="email"
         >
           <n-input
-            v-model:value="formValue.username"
+            v-model:value="formValue.email"
             placeholder="jdoe@schools.nyc.gov"
           />
         </n-form-item>

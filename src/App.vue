@@ -1,36 +1,30 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
-
-import { useRouter } from 'vue-router'
+import { computed } from 'vue'
 
 import {
   NConfigProvider, NGlobalStyle,
   NLayout, NLayoutSider,
   useOsTheme, darkTheme
 } from 'naive-ui'
-import settingsManager from './settings'
-import { useSidebarCollapsed } from './store'
+
+import { useConfigStore } from './store'
+import { storeToRefs } from 'pinia'
 
 const osTheme = useOsTheme()
 
-const theme = computed(() => osTheme.value === 'dark' ? darkTheme : null)
+const configStore = useConfigStore()
 
-const router = useRouter()
+const { needsConfig, config } = storeToRefs(configStore)
 
-const collapsed = useSidebarCollapsed()
-
-onMounted(async () => {
-  try {
-    const username = await settingsManager.get('username')
-    const password = await settingsManager.get('password')
-
-    if (username === undefined || password === undefined) {
-      router.push('/welcome')
-    } else {
-      collapsed.value = true
-    }
-  } catch {
-    router.push('/welcome')
+const theme = computed(() => {
+  const { theme } = config.value
+  switch (theme) {
+    case 'light':
+      return null
+    case 'dark':
+      return darkTheme
+    default:
+      return osTheme.value === 'dark' ? darkTheme : null
   }
 })
 
@@ -41,18 +35,15 @@ onMounted(async () => {
     <n-global-style />
     <n-layout has-sider>
       <n-layout-sider
-        content-style="padding: 24px;"
+        content-style="padding: 24px"
         :native-scrollbar="false"
+        :collapsed-width="0"
+        :collapsed="needsConfig"
         bordered
-        collapsed-width="0"
-        :collapsed="collapsed"
-      >
-        <p>Home</p>
-        <p>Home</p>
-        <p>Home</p>
-      </n-layout-sider>
+      />
       <n-layout
-        content-style="padding: 24px;"
+        id="main"
+        content-style="padding: 24px; display: flex; min-height: 100vh;"
         :native-scrollbar="false"
       >
         <router-view />

@@ -1,16 +1,16 @@
 import { createApp } from 'vue'
+import { createPinia } from 'pinia'
 
 import router from './router'
 
 import App from './App.vue'
 
-import settingsManager from './settings'
-
 import 'vfonts/Lato.css'
 import 'vfonts/FiraCode.css'
 
-settingsManager.initialize().catch(() => { alert('Unable to initialize settings') })
+const pinia = createPinia()
 
 createApp(App)
   .use(router)
+  .use(pinia)
   .mount('#app')
