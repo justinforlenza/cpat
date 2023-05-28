@@ -1,4 +1,4 @@
-import { type RouteRecordRaw, createRouter, createWebHashHistory } from 'vue-router'
+import { type RouteRecordRaw, createRouter, createMemoryHistory } from 'vue-router'
 
 import { useConfigStore } from './store'
 
@@ -12,14 +12,14 @@ const routes: RouteRecordRaw[] = [
 
 const router = createRouter({
   routes,
-  history: createWebHashHistory()
+  history: createMemoryHistory()
 })
 
 router.beforeEach(async (to) => {
   const { loadConfig } = useConfigStore()
   const { creds } = await loadConfig()
 
-  const needsConfig = creds.email === null || creds.password === null
+  const needsConfig = creds.username === null
 
   if (needsConfig && to.path !== '/welcome') {
     return '/welcome'

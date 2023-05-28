@@ -6,7 +6,7 @@ import { invoke } from '@tauri-apps/api/tauri'
 
 interface Config {
   creds: {
-    email: string | null
+    username: string | null
     password: string | null
   }
   theme: string | null
@@ -15,13 +15,13 @@ interface Config {
 export const useConfigStore = defineStore('config', () => {
   const config = ref<Config>({
     creds: {
-      email: null,
+      username: null,
       password: null
     },
     theme: null
   })
 
-  const needsConfig = computed(() => config.value.creds.email === null || config.value.creds.password === null)
+  const needsConfig = computed(() => config.value.creds.username === null)
 
   async function loadConfig (): Promise<Config> {
     const response = await invoke<Config>('get_config')

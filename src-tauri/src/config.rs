@@ -15,7 +15,7 @@ use toml;
 #[derive(serde::Serialize, serde::Deserialize, Default, Clone)]
 pub struct Credentials {
     username: Option<String>,
-    password: Option<()>
+    password: Option<String>
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Default, Clone)]
@@ -69,7 +69,9 @@ impl ConfigState {
   pub fn update_config(&self, new_config: Config) {
     let config_file = self.ensure_config_file();
 
-    let config_contents = new_config.clone();
+    let mut config_contents = new_config.clone();
+
+    config_contents.creds.password = None;
 
     // if new_config.creds.password.is_some() {
     //   let salt = SaltString::generate(&mut OsRng);

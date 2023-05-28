@@ -3,11 +3,17 @@ import { ref } from 'vue'
 
 import {
   NButton, NForm, NInput, NFormItem, type FormInst,
-  NP, NModal, NCard, NSpace
+  NP, NModal, NCard, NSpace,
+  useMessage
 } from 'naive-ui'
 
 import { useConfigStore } from '../store'
 import { storeToRefs } from 'pinia'
+
+import { useAsyncState } from '@vueuse/core'
+import { invoke } from '@tauri-apps/api/tauri'
+
+const message = useMessage()
 
 const props = defineProps({
   show: Boolean
@@ -20,7 +26,7 @@ const configStore = useConfigStore()
 const { config } = storeToRefs(configStore)
 
 const formRules = {
-  email: {
+  username: {
     required: true,
     message: 'Email is required'
   },
@@ -31,24 +37,28 @@ const formRules = {
 }
 
 const formRef = ref<FormInst | null>(null)
-const formValue = ref({
-  email: '',
-  password: ''
-})
+const formValue = ref(config.value.creds)
 
-const handleSubmit = () => {
+const { isLoading, execute: handleSubmit } = useAsyncState(async (): Promise<void> => {
   if (formRef.value !== null) {
-    formRef.value.validate(async errors => {
+    await formRef.value.validate(async errors => {
       if (errors === undefined) {
-        await configStore.storeConfig({
-          ...config.value,
-          creds: formValue.value
-        })
-        emit('update')
+        try {
+          await invoke('check_credentials', formValue.value)
+          await configStore.storeConfig({
+            ...config.value,
+            creds: formValue.value
+          })
+          emit('update')
+        } catch (e) {
+          message.error('Login Failed', { duration: 6500 })
+          console.warn(e)
+        }
       }
     })
   }
-}
+}, null, { immediate: false })
+
 </script>
 
 <template>
@@ -75,11 +85,11 @@ const handleSubmit = () => {
       >
         <n-form-item
           label="Email"
-          path="email"
+          path="username"
         >
           <n-input
-            v-model:value="formValue.email"
-            placeholder="jdoe@schools.nyc.gov"
+            v-model:value="formValue.username"
+            placeholder="jdoe"
           />
         </n-form-item>
         <n-form-item
@@ -89,7 +99,7 @@ const handleSubmit = () => {
           <n-input
             v-model:value="formValue.password"
             type="password"
-            placeholder="Password"
+            placeholder="*******"
           />
         </n-form-item>
       </n-form>
@@ -99,7 +109,9 @@ const handleSubmit = () => {
       >
         <n-button
           type="primary"
+          icon-placement="left"
           secondary
+          :loading="isLoading"
           @click="handleSubmit"
         >
           Confirm
