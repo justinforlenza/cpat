@@ -2,12 +2,20 @@ use std::{path::PathBuf, fs, sync::Mutex};
 
 use tauri::{api::path::{BaseDirectory, resolve_path}, Env};
 
+// use argon2::{
+//   password_hash::{
+//       rand_core::OsRng,
+//       PasswordHasher, SaltString
+//   },
+//   Argon2
+// };
+
 use toml;
 
 #[derive(serde::Serialize, serde::Deserialize, Default, Clone)]
 pub struct Credentials {
-    email: Option<String>,
-    password: Option<String>
+    username: Option<String>,
+    password: Option<()>
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Default, Clone)]
@@ -47,7 +55,7 @@ impl ConfigState {
   
     if !path.exists() {
       let initial_config = Config {
-        creds: Credentials { email: None, password: None },
+        creds: Credentials { username: None, password: None },
         theme: "system".to_string()
       };
       
@@ -60,12 +68,24 @@ impl ConfigState {
 
   pub fn update_config(&self, new_config: Config) {
     let config_file = self.ensure_config_file();
+
+    let config_contents = new_config.clone();
+
+    // if new_config.creds.password.is_some() {
+    //   let salt = SaltString::generate(&mut OsRng);
+    //   let argon2 = Argon2::default();
+    //   // let password = b"hunter42";
+    //   let password = new_config.creds.password.as_ref().expect("Unable to ref").as_bytes();
+    //   let password_hash = argon2.hash_password(password, &salt).expect("Unable to hash").to_string();
+
+    //   config_contents.creds.password = Some(password_hash)
+    // }
   
-    fs::write(config_file, toml::to_string(&new_config).unwrap()).expect("Unable to update config file");
+    fs::write(config_file, toml::to_string(&config_contents).unwrap()).expect("Unable to update config file");
 
     let mut state_guard = self.0.lock().unwrap();
 
-    *state_guard = new_config;
+    *state_guard = config_contents;
   }
 }
 
