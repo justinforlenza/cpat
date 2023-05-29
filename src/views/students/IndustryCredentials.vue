@@ -2,10 +2,18 @@
 import { NGradientText } from 'naive-ui'
 
 import { useAsyncState } from '@vueuse/core'
+import { useConfigStore } from '../../store'
+import { storeToRefs } from 'pinia'
+import { invoke } from '@tauri-apps/api/tauri'
+
+const configStore = useConfigStore()
+
+const { config } = storeToRefs(configStore)
 
 const handleClick = async () => {
   console.log('blah')
-  // await invoke('get_schools', config.value.creds)
+  const schools = await invoke('get_schools', config.value.creds)
+  console.log(schools)
 }
 
 </script>

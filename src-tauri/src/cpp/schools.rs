@@ -2,11 +2,11 @@ use scraper::{Html, Selector};
 
 #[derive(serde::Serialize, serde::Deserialize, Default, Clone)]
 pub struct School {
-  #[serde(rename="ID")]
-  id: String,
-  #[serde(rename="SchoolName")]
+  #[serde(rename(deserialize="ID"))]
+  id: i32,
+  #[serde(rename(deserialize="SchoolName"))]
   name: String,
-  #[serde(rename="SchoolDBN")]
+  #[serde(rename(deserialize="SchoolDBN"))]
   dbn: String,
 }
 
@@ -21,8 +21,8 @@ pub fn list_schools (client: reqwest::blocking::Client) -> Result<Vec<School>, B
 
   let script_code = table_script_element.inner_html();
 
-  let start = script_code.find("\"data\":[").ok_or(Error::new("Unable to find data"))?;
-  let end = script_code.find("]").ok_or(Error::new("Unable to find data"))?;
+  let start = script_code.find("\"data\":[").ok_or(Error::new("Unable to find data"))? + 7;
+  let end = script_code.find("]").ok_or(Error::new("Unable to find data"))? + 1;
 
   let schools_json = &script_code[start..end];
 
