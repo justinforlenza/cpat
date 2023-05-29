@@ -1,30 +1,20 @@
 <script setup lang="ts">
-import { NGradientText } from 'naive-ui'
+import { ref } from 'vue'
 
-import { useAsyncState } from '@vueuse/core'
-import { useConfigStore } from '../../store'
-import { storeToRefs } from 'pinia'
-import { invoke } from '@tauri-apps/api/tauri'
+import {
+  NGradientText,
+  type DataTableRowKey
+} from 'naive-ui'
 
-const configStore = useConfigStore()
+import StudentSearch from '../../components/StudentSearch.vue'
 
-const { config } = storeToRefs(configStore)
-
-const handleClick = async () => {
-  console.log('blah')
-  const schools = await invoke('get_schools', config.value.creds)
-  console.log(schools)
-}
+const selectedStudents = ref<DataTableRowKey[]>([])
 
 </script>
 
 <template>
-  <button @click="handleClick">
-    click me
-  </button>
-  <br>
   <n-gradient-text :size="40">
-    Industry Credentials
+    Industry Certifications
   </n-gradient-text>
-  <p>Hello world</p>
+  <student-search @checked="(v: DataTableRowKey[]) => selectedStudents = v" />
 </template>

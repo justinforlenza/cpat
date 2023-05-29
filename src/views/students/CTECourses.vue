@@ -14,7 +14,7 @@ const selectedStudents = ref<DataTableRowKey[]>([])
 
 <template>
   <n-gradient-text :size="40">
-    Employability Skills
+    CTE Courses
   </n-gradient-text>
   <student-search @checked="(v: DataTableRowKey[]) => selectedStudents = v" />
 </template>

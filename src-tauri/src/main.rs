@@ -38,7 +38,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
           get_config, set_config, 
           check_credentials,
-          get_schools
+          get_schools, get_pathways, get_students
         ])
         .setup(|app| {
 
@@ -79,10 +79,27 @@ fn check_credentials(username: String, password: String) -> Result<(), Error> {
 
 #[tauri::command]
 fn get_schools(username: String, password: String) -> Result<Vec<cpp::schools::School>, Error> {
-  println!("hello world");
   let client = cpp::create_client(username, password)?;
 
   let schools = cpp::schools::list_schools(client)?;
 
   Ok(schools)
+}
+
+#[tauri::command]
+fn get_pathways(username: String, password: String, school_id: i32) -> Result<Vec<cpp::pathways::Pathway>, Error> {
+  let client = cpp::create_client(username, password)?;
+
+  let pathways = cpp::pathways::list_pathways(client, school_id)?;
+
+  Ok(pathways)
+}
+
+#[tauri::command]
+fn get_students(username: String, password: String, school_id: i32, pathway_id: String, grade_id: Option<i32>) -> Result<Vec<cpp::students::Student>, Error> {
+  let client = cpp::create_client(username, password)?;
+
+  let students = cpp::students::list_students(client, school_id, pathway_id, grade_id)?;
+
+  Ok(students)
 }

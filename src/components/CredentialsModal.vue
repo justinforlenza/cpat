@@ -116,7 +116,6 @@ watch(config, (value) => {
       >
         <n-button
           type="primary"
-          icon-placement="left"
           secondary
           :loading="isLoading"
           @click="handleSubmit"

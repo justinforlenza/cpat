@@ -62,9 +62,20 @@ const menuOptions: MenuOption[] = [
             {
               to: '/credentials'
             },
-            { default: () => 'Credentials' }
+            { default: () => 'Industry Certifications' }
           ),
         key: 'credentials'
+      },
+      {
+        label: () =>
+          h(
+            RouterLink,
+            {
+              to: '/cte_courses'
+            },
+            { default: () => 'CTE Courses' }
+          ),
+        key: 'cte_courses'
       }
     ]
   }
