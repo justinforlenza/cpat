@@ -6,7 +6,7 @@ import HomePage from './views/HomePage.vue'
 import WelcomePage from './views/WelcomePage.vue'
 
 const routes: RouteRecordRaw[] = [
-  { path: '/', component: HomePage },
+  { path: '/', component: HomePage, name: 'Home' },
   { path: '/welcome', component: WelcomePage }
 ]
 

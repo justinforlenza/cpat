@@ -2,10 +2,13 @@
 import { computed } from 'vue'
 
 import {
-  NConfigProvider, NGlobalStyle,
-  NLayout, NLayoutSider,
+  NConfigProvider, NGlobalStyle, NMessageProvider,
+  NLayout,
   useOsTheme, darkTheme
 } from 'naive-ui'
+import { themeOverrides } from './theme'
+
+import NavigationAside from './components/NavigationAside.vue'
 
 import { useConfigStore } from './store'
 import { storeToRefs } from 'pinia'
@@ -14,7 +17,7 @@ const osTheme = useOsTheme()
 
 const configStore = useConfigStore()
 
-const { needsConfig, config } = storeToRefs(configStore)
+const { config } = storeToRefs(configStore)
 
 const theme = computed(() => {
   const { theme } = config.value
@@ -31,24 +34,23 @@ const theme = computed(() => {
 </script>
 
 <template>
-  <n-config-provider :theme="theme">
+  <n-config-provider
+    :theme="theme"
+    :theme-overrides="themeOverrides"
+  >
     <n-global-style />
-    <n-layout has-sider>
-      <n-layout-sider
-        content-style="padding: 24px"
-        :native-scrollbar="false"
-        :collapsed-width="0"
-        :collapsed="needsConfig"
-        bordered
-      />
-      <n-layout
-        id="main"
-        content-style="padding: 24px; display: flex; min-height: 100vh;"
-        :native-scrollbar="false"
-      >
-        <router-view />
+    <n-message-provider placement="bottom">
+      <n-layout has-sider>
+        <navigation-aside />
+        <n-layout
+          id="main"
+          content-style="padding: 24px; display: flex; min-height: 100vh;"
+          :native-scrollbar="false"
+        >
+          <router-view />
+        </n-layout>
       </n-layout>
-    </n-layout>
+    </n-message-provider>
   </n-config-provider>
 </template>
 
