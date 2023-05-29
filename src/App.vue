@@ -9,6 +9,7 @@ import {
 import { themeOverrides } from './theme'
 
 import NavigationAside from './components/NavigationAside.vue'
+import CredentialsModal from './components/CredentialsModal.vue'
 
 import { useConfigStore } from './store'
 import { storeToRefs } from 'pinia'
@@ -31,6 +32,8 @@ const theme = computed(() => {
   }
 })
 
+const showCredentials = computed(() => config.value.creds.username !== null && config.value.creds.password === null)
+
 </script>
 
 <template>
@@ -40,11 +43,12 @@ const theme = computed(() => {
   >
     <n-global-style />
     <n-message-provider placement="bottom">
+      <credentials-modal :show="showCredentials" />
       <n-layout has-sider>
         <navigation-aside />
         <n-layout
           id="main"
-          content-style="padding: 24px; display: flex; min-height: 100vh;"
+          content-style="padding: 24px; display: flex; min-height: 100vh; flex-direction: column;"
           :native-scrollbar="false"
         >
           <router-view />

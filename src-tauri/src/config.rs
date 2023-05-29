@@ -87,7 +87,7 @@ impl ConfigState {
 
     let mut state_guard = self.0.lock().unwrap();
 
-    *state_guard = config_contents;
+    *state_guard = new_config;
   }
 }
 

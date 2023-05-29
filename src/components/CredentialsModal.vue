@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 import {
   NButton, NForm, NInput, NFormItem, type FormInst,
@@ -37,7 +37,10 @@ const formRules = {
 }
 
 const formRef = ref<FormInst | null>(null)
-const formValue = ref(config.value.creds)
+const formValue = ref({
+  password: null,
+  username: null
+})
 
 const { isLoading, execute: handleSubmit } = useAsyncState(async (): Promise<void> => {
   if (formRef.value !== null) {
@@ -59,6 +62,10 @@ const { isLoading, execute: handleSubmit } = useAsyncState(async (): Promise<voi
   }
 }, null, { immediate: false })
 
+watch(config, (value) => {
+  formValue.value = JSON.parse(JSON.stringify(value.creds))
+})
+
 </script>
 
 <template>
@@ -76,7 +83,7 @@ const { isLoading, execute: handleSubmit } = useAsyncState(async (): Promise<voi
       aria-modal="true"
     >
       <n-p>
-        Enter your Career Pathways Portal credentials
+        Enter your Career Pathways Portal credentials to continue
       </n-p>
       <n-form
         ref="formRef"

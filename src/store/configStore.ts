@@ -12,7 +12,7 @@ interface Config {
   theme: string | null
 }
 
-export const useConfigStore = defineStore('config', () => {
+const useConfigStore = defineStore('config', () => {
   const config = ref<Config>({
     creds: {
       username: null,
@@ -38,3 +38,5 @@ export const useConfigStore = defineStore('config', () => {
 
   return { config, needsConfig, loadConfig, storeConfig }
 })
+
+export default useConfigStore

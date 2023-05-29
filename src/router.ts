@@ -5,9 +5,16 @@ import { useConfigStore } from './store'
 import HomePage from './views/HomePage.vue'
 import WelcomePage from './views/WelcomePage.vue'
 
+import EmployabilitySkills from './views/students/EmployablitySkills.vue'
+import TechnicalSkills from './views/students/TechnicalSkills.vue'
+import IndustryCredentials from './views/students/IndustryCredentials.vue'
+
 const routes: RouteRecordRaw[] = [
   { path: '/', component: HomePage, name: 'Home' },
-  { path: '/welcome', component: WelcomePage }
+  { path: '/welcome', component: WelcomePage },
+  { path: '/emp_skills', component: EmployabilitySkills },
+  { path: '/tech_skills', component: TechnicalSkills },
+  { path: '/credentials', component: IndustryCredentials }
 ]
 
 const router = createRouter({

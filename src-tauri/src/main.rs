@@ -5,11 +5,7 @@ mod config;
 use config::{ConfigState, Config};
 
 mod cpp;
-use cpp::create_client;
 
-
-use reqwest::blocking::Client as BlockingClient; 
-use scraper::{Html, Selector};
 
 use tauri::{Manager};
 
@@ -39,7 +35,11 @@ impl serde::Serialize for Error {
 fn main() {
     tauri::Builder::default()
         .manage(ConfigState(Default::default()))
-        .invoke_handler(tauri::generate_handler![get_config, set_config, check_credentials])
+        .invoke_handler(tauri::generate_handler![
+          get_config, set_config, 
+          check_credentials,
+          get_schools
+        ])
         .setup(|app| {
 
             #[cfg(debug_assertions)] // only include this code on debug builds
@@ -61,7 +61,7 @@ fn main() {
 
 #[tauri::command]
 fn get_config(state: tauri::State<ConfigState>) -> Config {
-    state.load_state();
+    // state.load_state();
     state.0.lock().unwrap().clone()
 }
 
@@ -72,7 +72,17 @@ fn set_config(new_config: Config, state: tauri::State<ConfigState>) {
 
 #[tauri::command]
 fn check_credentials(username: String, password: String) -> Result<(), Error> {
-  let _client = create_client(username, password)?;
+  let _client = cpp::create_client(username, password)?;
 
   Ok(())
+}
+
+#[tauri::command]
+fn get_schools(username: String, password: String) -> Result<Vec<cpp::schools::School>, Error> {
+  println!("hello world");
+  let client = cpp::create_client(username, password)?;
+
+  let schools = cpp::schools::list_schools(client)?;
+
+  Ok(schools)
 }
