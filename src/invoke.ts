@@ -24,6 +24,13 @@ export interface Certification {
   name: string
 }
 
+export interface AddCertification {
+  certificationId: string | null
+  authorityId: string | null
+  status: string | null
+  date: string | null
+}
+
 type CertificationAuthority = Certification
 
 const _invoke = {
@@ -34,7 +41,8 @@ const _invoke = {
     list: async (schoolId: number | string): Promise<Pathway[]> => await invoke('get_pathways', { schoolId })
   },
   students: {
-    list: async (schoolId: number | null, pathwayId: string | null, gradeId: number | null): Promise<Student[]> => await invoke('get_students', { schoolId, pathwayId, gradeId })
+    list: async (schoolId: number | null, pathwayId: string | null, gradeId: number | null): Promise<Student[]> => await invoke('get_students', { schoolId, pathwayId, gradeId }),
+    addCertifications: async (students: number[], payload: AddCertification): Promise<void> => { await invoke('bulk_add_certifications', { students, ...payload }) }
   },
   certifications: {
     list: async (studentId: number): Promise<Certification[]> => await invoke('get_certifications', { studentId }),

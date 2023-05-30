@@ -6,22 +6,24 @@ import {
   NForm, NFormItemGi, NSelect, NButton, NDatePicker,
   NGrid, NSpace,
   useMessage,
-  type DataTableRowKey, type FormInst
+  type FormInst
 } from 'naive-ui'
 
 import StudentSearch from '../../components/StudentSearch.vue'
 
 import { useAsyncState } from '@vueuse/core'
-import invoke, { type Student } from '../../invoke'
+import invoke, { AddCertification, type Student } from '../../invoke'
 
-const selectedStudents = ref<DataTableRowKey[]>([])
+const message = useMessage()
+
+const selectedStudents = ref<number[]>([96665, 3, 4, 5, 6])
 
 const students = ref<Student[]>([])
 
 const formRef = ref<FormInst | null>(null)
 
 const rules = {
-  certification: {
+  certificationId: {
     required: true,
     message: 'Certification is required'
   },
@@ -33,21 +35,42 @@ const rules = {
     required: true,
     message: 'Status is required'
   },
-  authority: {
+  authorityId: {
     required: true,
     message: 'Authority is required'
   }
 }
 
-const formValues = ref({
-  certification: null,
+const formValues = ref<AddCertification>({
+  certificationId: null,
   date: null,
   status: null,
-  authority: null
+  authorityId: null
 })
 
 const { state: certs, isLoading: certsIsLoading, execute: loadCerts } = useAsyncState(invoke.certifications.list, [], { immediate: false })
 const { state: authorities, isLoading: authoritiesIsLoading, execute: loadAuthorities } = useAsyncState(invoke.certifications.authorities, [], { immediate: false })
+
+const { isLoading, execute: handleSubmit } = useAsyncState(async () => {
+  if (formRef.value !== null) {
+    await formRef.value.validate(console.log)
+    console.log('h')
+    try {
+      await invoke.students.addCertifications(
+        selectedStudents.value,
+        {
+          ...formValues.value,
+          date: (new Date(formValues.value.date ?? '').toISOString())
+        }
+      )
+    } catch (e) {
+      message.error('Bulk Certification Failed', { duration: 6500 })
+      console.warn(e)
+    }
+  }
+}, null, {
+  immediate: false
+})
 
 </script>
 
@@ -56,10 +79,11 @@ const { state: authorities, isLoading: authoritiesIsLoading, execute: loadAuthor
     Industry Certifications
   </n-gradient-text>
   <student-search
-    @checked="(v: DataTableRowKey[]) => selectedStudents = v"
+    @checked="(v: number[]) => selectedStudents = v"
     @search="(v: Student[]) => {students = v; loadCerts(undefined, v[0].id)}"
   />
   <n-form
+    ref="formRef"
     :model="formValues"
     :rules="rules"
     :disabled="students.length === 0"
@@ -73,24 +97,24 @@ const { state: authorities, isLoading: authoritiesIsLoading, execute: loadAuthor
       <n-form-item-gi
         :span="8"
         label="Certification"
-        path="certification"
+        path="certificationId"
       >
         <n-select
-          v-model:value="formValues.certification"
+          v-model:value="formValues.certificationId"
           :options="certs.map(s => ({value: s.id, label: s.name}))"
           :loading="certsIsLoading"
           filterable
           clearable
-          @update:value="(v: string) => {loadAuthorities(0, students[0].id, v); formValues.authority = null}"
+          @update:value="(v: string) => {loadAuthorities(0, students[0].id, v); formValues.authorityId = null}"
         />
       </n-form-item-gi>
       <n-form-item-gi
         :span="8"
         label="Certifying Authority"
-        path="authority"
+        path="authorityId"
       >
         <n-select
-          v-model:value="formValues.authority"
+          v-model:value="formValues.authorityId"
           :options="authorities.map(s => ({value: s.id, label: s.name}))"
           :loading="authoritiesIsLoading"
           filterable
@@ -113,9 +137,10 @@ const { state: authorities, isLoading: authoritiesIsLoading, execute: loadAuthor
         path="date"
       >
         <n-date-picker
-          v-model:value="formValues.date"
+          v-model:formatted-value="formValues.date"
           type="date"
           format="MM/dd/yyyy"
+          value-format="yyyy-MM-dd"
         />
       </n-form-item-gi>
     </n-grid>
@@ -125,6 +150,8 @@ const { state: authorities, isLoading: authoritiesIsLoading, execute: loadAuthor
       type="primary"
       size="large"
       :disabled="selectedStudents.length === 0"
+      :loading="isLoading"
+      @click="handleSubmit"
     >
       Add Certifications
     </n-button>

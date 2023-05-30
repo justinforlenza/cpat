@@ -65,7 +65,7 @@ pub fn list_certification_authorities (client: reqwest::blocking::Client, studen
 }
 
 
-pub fn add_certification (client: reqwest::blocking::Client, student_id: i32, certification_id: String, authority_id: String, date: String, status: String) -> Result<(), Box<dyn std::error::Error>> {
+pub fn add_certification (client: &reqwest::blocking::Client, student_id: &i32, certification_id: &String, authority_id: &String, date: &String, status: &String) -> Result<(), Box<dyn std::error::Error>> {
   let base_url = format!("https://careerpathways.nyc/Students/{}", student_id);
   
   let query = [

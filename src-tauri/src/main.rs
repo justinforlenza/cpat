@@ -2,11 +2,14 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod config;
+use std::borrow::{Borrow, BorrowMut};
+
 use config::{ConfigState, Config};
 
 mod cpp;
 
 
+use serde_json::map;
 use tauri::{Manager};
 
 
@@ -31,6 +34,13 @@ impl serde::Serialize for Error {
   }
 }
 
+#[derive(Clone, serde::Serialize)]
+struct ProgressPayload {
+  pass: i32,
+  fail: i32,
+  total: i32
+}
+
 
 fn main() {
     tauri::Builder::default()
@@ -39,9 +49,11 @@ fn main() {
           get_config, set_config, 
           check_credentials,
           get_schools, get_pathways, get_students,
-          get_certifications, get_certification_authorities
+          get_certifications, get_certification_authorities, bulk_add_certifications
         ])
         .setup(|app| {
+
+            let handle = app.handle();
 
             #[cfg(debug_assertions)] // only include this code on debug builds
             {
@@ -51,7 +63,7 @@ fn main() {
             }
             
             let config_state: tauri::State<ConfigState> = app.state();
-            config_state.load_state();
+            config_state.load_state(handle);
     
             Ok(())
         })
@@ -67,8 +79,8 @@ fn get_config(state: tauri::State<ConfigState>) -> Config {
 }
 
 #[tauri::command]
-fn set_config(new_config: Config, state: tauri::State<ConfigState>) {
-    state.update_config(new_config)
+fn set_config(new_config: Config, state: tauri::State<ConfigState>, app_handle: tauri::AppHandle) {
+    state.update_config(new_config, app_handle)
 }
 
 #[tauri::command]
@@ -126,4 +138,51 @@ fn get_certification_authorities(student_id: i32, certification_id: String, stat
   let cert_authorities = cpp::students::emp_profile::list_certification_authorities(client, student_id, certification_id)?;
 
   Ok(cert_authorities)
+}
+
+
+
+#[tauri::command]
+fn bulk_add_certifications(
+  students: Vec<i32>, 
+  certification_id: String, 
+  date: String, 
+  status: String, 
+  authority_id: String, 
+  state: tauri::State<ConfigState>,
+  app_handle: tauri::AppHandle
+) -> Result<(), Error> {
+  let creds = state.0.lock().unwrap().creds.clone();
+  let client = cpp::create_client(creds.username.expect("invalid creds"), creds.password.expect("invalid creds"))?;
+
+  std::thread::spawn(move || {
+    let mut fail = 0;
+    let mut pass = 0;
+    let total = students.len().try_into().expect("failed to convert length");
+
+    app_handle.emit_all("task_start", ProgressPayload {
+      fail,
+      pass,
+      total
+    }).expect("Unable to emit message");
+
+    for student_id in students {
+      std::thread::sleep(std::time::Duration::from_secs(1));
+      let result = cpp::students::emp_profile::add_certification(&client, &student_id, &certification_id, &authority_id, &date, &status);
+      match result {
+          Ok(()) => pass += 1,
+          Err(..) => fail += 1
+      };
+
+      app_handle.emit_all("task_progress", ProgressPayload {
+        fail,
+        pass,
+        total
+      }).expect("Unable to emit event");
+    }
+
+    app_handle.emit_all("task_stop", ()).expect("Unable to emit message");
+  });
+
+  Ok(())
 }

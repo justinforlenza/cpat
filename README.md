@@ -1,16 +1,17 @@
-# Tauri + Vue 3 + TypeScript
+# CPAT
+The Career Pathways Automation Tool is a powerfull solution developed to address the inherent inefficiencies of the existing Career Pathways Portal website.
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Recognizing the limitations and time-consuming processes of the portal, this program aims to streamline tasks and optimize user productivity.
 
-## Recommended IDE Setup
+The Career Pathways Portal Automation Program aims to address these inefficiencies by automating many repetitive tasks.
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+This tool was developed out of passion (and a little frustration) to meet a specific set of needs.
+It may fit your needs, it may not. Use at your own discretion and be sure to test before using at large scale.
 
-## Type Support For `.vue` Imports in TS
+# Installation
+Head to the [releases](https://github.com/justinforlenza/cpat/releases/latest) page to download the latest version for your Operating System
 
-Since TypeScript cannot handle type information for `.vue` imports, they are shimmed to be a generic Vue component type by default. In most cases this is fine if you don't really care about component prop types outside of templates. However, if you wish to get actual prop types in `.vue` imports (for example to get props validation when using manual `h(...)` calls), you can enable Volar's Take Over mode by following these steps:
+# Disclaimer
+This software is provided as-is, without any warranties or guarantees of any kind, either express or implied, including but not limited to the implied warranties of merchantability and fitness for a particular purpose.
+The use of this software is at your own risk and we shall not be held responsible for any loss of data, damages, or any other issues that may arise from the use of this software.
 
-1. Run `Extensions: Show Built-in Extensions` from VS Code's command palette, look for `TypeScript and JavaScript Language Features`, then right click and select `Disable (Workspace)`. By default, Take Over mode will enable itself if the default TypeScript extension is disabled.
-2. Reload the VS Code window by running `Developer: Reload Window` from the command palette.
-
-You can learn more about Take Over mode [here](https://github.com/johnsoncodehk/volar/discussions/471).

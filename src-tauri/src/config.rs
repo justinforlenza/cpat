@@ -28,19 +28,20 @@ pub struct Config {
 pub struct ConfigState(pub Mutex<Config>);
 
 impl ConfigState {
-  pub fn get_config_path(&self) -> PathBuf {
-    let context = tauri::generate_context!();
+  pub fn get_config_path(&self, app_handle: tauri::AppHandle) -> PathBuf {
+    // let context = tauri::generate_context!();
+
     resolve_path(
-      context.config(),
-      context.package_info(),
+      &app_handle.config(),
+      &app_handle.package_info(),
       &Env::default(),
       "settings.toml",
       Some(BaseDirectory::AppConfig)
     ).expect("Unable to resolve config file")
   }
 
-  pub fn load_state(&self) {
-    let path = self.ensure_config_file();
+  pub fn load_state(&self, app_handle: tauri::AppHandle) {
+    let path = self.ensure_config_file(app_handle);
     let contents = fs::read_to_string(path).expect("Unable to read local config file");
   
     let config: Config = toml::from_str(&contents).unwrap();
@@ -50,8 +51,8 @@ impl ConfigState {
     *state_guard = config
   }
   
-  pub fn ensure_config_file(&self) -> PathBuf {
-    let path = self.get_config_path();
+  pub fn ensure_config_file(&self, app_handle: tauri::AppHandle) -> PathBuf {
+    let path = self.get_config_path(app_handle);
   
     if !path.exists() {
       let initial_config = Config {
@@ -66,8 +67,8 @@ impl ConfigState {
     return path
   }
 
-  pub fn update_config(&self, new_config: Config) {
-    let config_file = self.ensure_config_file();
+  pub fn update_config(&self, new_config: Config, app_handle: tauri::AppHandle) {
+    let config_file = self.ensure_config_file(app_handle);
 
     let mut config_contents = new_config.clone();
 

@@ -10,6 +10,7 @@ import { themeOverrides } from './theme'
 
 import NavigationAside from './components/NavigationAside.vue'
 import CredentialsModal from './components/CredentialsModal.vue'
+import ProgressDialog from './components/ProgressDialog.vue'
 
 import { useConfigStore } from './store'
 import { storeToRefs } from 'pinia'
@@ -44,6 +45,7 @@ const showCredentials = computed(() => config.value.creds.username !== null && c
     <n-global-style />
     <n-message-provider placement="bottom">
       <credentials-modal :show="showCredentials" />
+      <progress-dialog />
       <n-layout has-sider>
         <navigation-aside />
         <n-layout
