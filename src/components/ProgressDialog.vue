@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 
-import { NModal, NGradientText, NP, NProgress, NCard, NButton } from 'naive-ui'
+import { NModal, NGradientText, NP, NProgress, NCard, NButton, NAlert } from 'naive-ui'
 
 import { listen, UnlistenFn } from '@tauri-apps/api/event'
 
@@ -12,7 +12,7 @@ interface TaskProgress {
 }
 
 const progress = ref({
-  total: 100,
+  total: 1,
   pass: 0,
   fail: 0
 })
@@ -45,6 +45,15 @@ onUnmounted(() => {
   stopListener?.()
 })
 
+const alertType = computed(() => {
+  if (progress.value.pass === progress.value.total) {
+    return 'success'
+  } else if (progress.value.fail === progress.value.total) {
+    return 'error'
+  }
+  return 'warning'
+})
+
 </script>
 
 <template>
@@ -74,14 +83,33 @@ onUnmounted(() => {
         :percentage="percentage"
         :processing="isLoading"
       />
-      <n-button
+      <div
         v-show="!isLoading"
-        tertiary
         style="margin-top: 24px"
-        @click="isOpen = false"
       >
-        Continue
-      </n-button>
+        <n-alert
+          title="Complete"
+          :type="alertType"
+        >
+          <n-p v-if="progress.pass === progress.total">
+            Congrats! Your request is fully complete
+          </n-p>
+          <n-p v-else-if="progress.fail === progress.total">
+            Uh-oh! We were ran into issues while processing your requests.
+          </n-p>
+          <n-p v-else>
+            The good news: We were able to complete some of your requests <br>
+            The bad news: We were not able to complete all of your requests
+          </n-p>
+        </n-alert>
+        <n-button
+          tertiary
+          style="margin-top: 24px"
+          @click="isOpen = false"
+        >
+          Continue
+        </n-button>
+      </div>
     </n-card>
   </n-modal>
 </template>
