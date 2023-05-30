@@ -65,7 +65,14 @@ pub fn list_certification_authorities (client: reqwest::blocking::Client, studen
 }
 
 
-pub fn add_certification (client: &reqwest::blocking::Client, student_id: &i32, certification_id: &String, authority_id: &String, date: &String, status: &String) -> Result<(), Box<dyn std::error::Error>> {
+pub fn add_certification (
+  client: &reqwest::blocking::Client, 
+  student_id: &i32, 
+  certification_id: &String, 
+  authority_id: &String, 
+  date: &String, 
+  status: &String
+) -> Result<(), Box<dyn std::error::Error>> {
   let base_url = format!("https://careerpathways.nyc/Students/{}", student_id);
   
   let query = [
@@ -103,6 +110,73 @@ pub fn add_certification (client: &reqwest::blocking::Client, student_id: &i32, 
   ];
 
   client.post(&base_url).query(&query).form(&body).send()?;
+
+  Ok(())
+}
+
+pub fn add_professional_skills (
+  client: &reqwest::blocking::Client, 
+  student_id: &i32, 
+  date: &String, 
+  deadline: &String,
+  grade_id: &i32
+) -> Result<(), Box<dyn std::error::Error>> {
+  let base_url = format!("https://careerpathways.nyc/Students/{}", student_id);
+  
+  let query = [
+    ("handler", "ProfSkillsEditRecord"),
+    ("StudentID", &student_id.to_string()),
+    ("AssessmentID", "0")
+  ];
+
+  let csrf_request = client.get(&base_url).query(&query).send()?;
+
+  let csrf_request_text = csrf_request.text()?;
+
+  let csrf_request_page = Html::parse_document(&csrf_request_text);
+
+  let csrf_selector = Selector::parse("input[name=__RequestVerificationToken]")?;
+
+  let csrf_input = csrf_request_page.select(&csrf_selector).last().ok_or(Error::new("Unable to load CSRF token"))?;
+
+  let csrf_token = csrf_input.value().attr("value").ok_or(Error::new("Unable to load CSRF token"))?;
+
+  let body_base = [
+    ("PageAction".to_string(), "NewRecord".to_string()),
+    ("Id".to_string(), "0".to_string()),
+    ("StudentId".to_string(), student_id.to_string()),
+    ("SkillDate".to_string(), date.to_string()),
+    ("GradeId".to_string(), grade_id.to_string()),
+    ("DeadlineDate".to_string(), deadline.to_string()),
+    ("Comments".to_string(), "".to_string()),
+    ("__RequestVerificationToken".to_string(), csrf_token.to_string()),
+  ];
+
+  let mut body: Vec<(String, String)> = Vec::new();
+
+  let skill_inputs_selector = Selector::parse("*[name^=\"lstProfessionalSkills\"]")?;
+  
+  let skill_inputs = csrf_request_page.select(&skill_inputs_selector);
+
+  for skill_input in skill_inputs {
+    let value = skill_input.value().attr("value").unwrap_or("0").to_string();
+    let name = skill_input.value().attr("name").unwrap_or("not_found").to_string();
+    if name != "not_found" {
+      body.push((name, value))
+    }
+  };
+
+  body.extend(body_base);
+
+  let query = [
+    ("handler", "ProfSkills")
+  ];
+
+  println!("{:?}", body);
+
+  let req = client.post(&base_url).query(&query).form(&body).send()?;
+
+  println!("{:}", req.text()?);
 
   Ok(())
 }

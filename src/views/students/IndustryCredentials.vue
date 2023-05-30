@@ -53,8 +53,7 @@ const { state: authorities, isLoading: authoritiesIsLoading, execute: loadAuthor
 
 const { isLoading, execute: handleSubmit } = useAsyncState(async () => {
   if (formRef.value !== null) {
-    await formRef.value.validate(console.log)
-    console.log('h')
+    await formRef.value.validate()
     try {
       await invoke.students.addCertifications(
         selectedStudents.value,
