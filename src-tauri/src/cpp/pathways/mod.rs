@@ -1,6 +1,3 @@
-use std::error::Error;
-
-
 #[derive(serde::Serialize, serde::Deserialize, Default, Clone)]
 pub struct Pathway {
   #[serde(rename(deserialize="Value"))]
@@ -9,7 +6,7 @@ pub struct Pathway {
   name: String
 }
 
-pub fn list_pathways (client: reqwest::blocking::Client, school_id: i32) -> Result<Vec<Pathway>, Box<dyn Error>> {
+pub fn list_pathways (client: reqwest::blocking::Client, school_id: i32) -> Result<Vec<Pathway>, Box<dyn std::error::Error>> {
   let query = [
     ("handler", "UpdateCTEPrograms"),
     ("SchoolId", &school_id.to_string())

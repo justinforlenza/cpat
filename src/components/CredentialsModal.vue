@@ -44,21 +44,18 @@ const formValue = ref({
 
 const { isLoading, execute: handleSubmit } = useAsyncState(async (): Promise<void> => {
   if (formRef.value !== null) {
-    await formRef.value.validate(async errors => {
-      if (errors === undefined) {
-        try {
-          await invoke('check_credentials', formValue.value)
-          await configStore.storeConfig({
-            ...config.value,
-            creds: formValue.value
-          })
-          emit('update')
-        } catch (e) {
-          message.error('Login Failed', { duration: 6500 })
-          console.warn(e)
-        }
-      }
-    })
+    await formRef.value.validate()
+    try {
+      await invoke('check_credentials', formValue.value)
+      await configStore.storeConfig({
+        ...config.value,
+        creds: formValue.value
+      })
+      emit('update')
+    } catch (e) {
+      message.error('Login Failed', { duration: 6500 })
+      console.warn(e)
+    }
   }
 }, null, { immediate: false })
 

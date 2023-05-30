@@ -14,8 +14,8 @@ use toml;
 
 #[derive(serde::Serialize, serde::Deserialize, Default, Clone)]
 pub struct Credentials {
-    username: Option<String>,
-    password: Option<String>
+    pub username: Option<String>,
+    pub password: Option<String>
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Default, Clone)]

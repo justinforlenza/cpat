@@ -38,7 +38,8 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
           get_config, set_config, 
           check_credentials,
-          get_schools, get_pathways, get_students
+          get_schools, get_pathways, get_students,
+          get_certifications, get_certification_authorities
         ])
         .setup(|app| {
 
@@ -78,8 +79,9 @@ fn check_credentials(username: String, password: String) -> Result<(), Error> {
 }
 
 #[tauri::command]
-fn get_schools(username: String, password: String) -> Result<Vec<cpp::schools::School>, Error> {
-  let client = cpp::create_client(username, password)?;
+fn get_schools(state: tauri::State<ConfigState>) -> Result<Vec<cpp::schools::School>, Error> {
+  let creds = state.0.lock().unwrap().creds.clone();
+  let client = cpp::create_client(creds.username.expect("invalid creds"), creds.password.expect("invalid creds"))?;
 
   let schools = cpp::schools::list_schools(client)?;
 
@@ -87,8 +89,9 @@ fn get_schools(username: String, password: String) -> Result<Vec<cpp::schools::S
 }
 
 #[tauri::command]
-fn get_pathways(username: String, password: String, school_id: i32) -> Result<Vec<cpp::pathways::Pathway>, Error> {
-  let client = cpp::create_client(username, password)?;
+fn get_pathways(school_id: i32, state: tauri::State<ConfigState>) -> Result<Vec<cpp::pathways::Pathway>, Error> {
+  let creds = state.0.lock().unwrap().creds.clone();
+  let client = cpp::create_client(creds.username.expect("invalid creds"), creds.password.expect("invalid creds"))?;
 
   let pathways = cpp::pathways::list_pathways(client, school_id)?;
 
@@ -96,10 +99,31 @@ fn get_pathways(username: String, password: String, school_id: i32) -> Result<Ve
 }
 
 #[tauri::command]
-fn get_students(username: String, password: String, school_id: i32, pathway_id: String, grade_id: Option<i32>) -> Result<Vec<cpp::students::Student>, Error> {
-  let client = cpp::create_client(username, password)?;
+fn get_students(school_id: i32, pathway_id: String, grade_id: Option<i32>, state: tauri::State<ConfigState>) -> Result<Vec<cpp::students::Student>, Error> {
+  let creds = state.0.lock().unwrap().creds.clone();
+  let client = cpp::create_client(creds.username.expect("invalid creds"), creds.password.expect("invalid creds"))?;
 
   let students = cpp::students::list_students(client, school_id, pathway_id, grade_id)?;
 
   Ok(students)
+}
+
+#[tauri::command]
+fn get_certifications(student_id: i32, state: tauri::State<ConfigState>) -> Result<Vec<cpp::students::emp_profile::Certification>, Error> {
+  let creds = state.0.lock().unwrap().creds.clone();
+  let client = cpp::create_client(creds.username.expect("invalid creds"), creds.password.expect("invalid creds"))?;
+
+  let certifications = cpp::students::emp_profile::list_certifications(client, student_id)?;
+
+  Ok(certifications)
+}
+
+#[tauri::command]
+fn get_certification_authorities(student_id: i32, certification_id: String, state: tauri::State<ConfigState>) -> Result<Vec<cpp::students::emp_profile::CertificationAuthority>, Error> {
+  let creds = state.0.lock().unwrap().creds.clone();
+  let client = cpp::create_client(creds.username.expect("invalid creds"), creds.password.expect("invalid creds"))?;
+
+  let cert_authorities = cpp::students::emp_profile::list_certification_authorities(client, student_id, certification_id)?;
+
+  Ok(cert_authorities)
 }

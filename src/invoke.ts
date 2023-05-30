@@ -1,7 +1,5 @@
 import { invoke } from '@tauri-apps/api/tauri'
 
-interface Credentials { username: string | null, password: string | null }
-
 interface School {
   id: number
   name: string
@@ -21,15 +19,26 @@ export interface Student {
   pathway_id: number
 }
 
+export interface Certification {
+  id: string
+  name: string
+}
+
+type CertificationAuthority = Certification
+
 const _invoke = {
   schools: {
-    list: async (creds: Credentials): Promise<School[]> => await invoke('get_schools', { ...creds })
+    list: async (): Promise<School[]> => await invoke('get_schools')
   },
   pathways: {
-    list: async (creds: Credentials, schoolId: number | string): Promise<Pathway[]> => await invoke('get_pathways', { ...creds, schoolId })
+    list: async (schoolId: number | string): Promise<Pathway[]> => await invoke('get_pathways', { schoolId })
   },
   students: {
-    list: async (creds: Credentials, schoolId: number | null, pathwayId: string | null, gradeId: number | null): Promise<Student[]> => await invoke('get_students', { ...creds, schoolId, pathwayId, gradeId })
+    list: async (schoolId: number | null, pathwayId: string | null, gradeId: number | null): Promise<Student[]> => await invoke('get_students', { schoolId, pathwayId, gradeId })
+  },
+  certifications: {
+    list: async (studentId: number): Promise<Certification[]> => await invoke('get_certifications', { studentId }),
+    authorities: async (studentId: number, certificationId: string): Promise<CertificationAuthority[]> => await invoke('get_certification_authorities', { studentId, certificationId })
   }
 }
 

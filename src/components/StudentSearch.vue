@@ -8,29 +8,22 @@ import {
   type DataTableColumns, type DataTableRowKey, type FormInst
 } from 'naive-ui'
 
-import { useConfigStore } from '../store'
-import { storeToRefs } from 'pinia'
-
 import { useAsyncState } from '@vueuse/core'
 import invoke, { type Student } from '../invoke'
 import { shell } from '@tauri-apps/api'
 
 const emit = defineEmits<{(e: 'search', scholars: Student[]): void, (e: 'checked', checked: DataTableRowKey[]): void}>()
 
-const configStore = useConfigStore()
-
-const { config } = storeToRefs(configStore)
-
 const message = useMessage()
 
-const { state: schools, isLoading: schoolsLoading } = useAsyncState(async () => await invoke.schools.list(config.value.creds), [])
+const { state: schools, isLoading: schoolsLoading } = useAsyncState(invoke.schools.list, [])
 
 const { state: pathways, isLoading: pathwaysLoading, execute: loadPathways } = useAsyncState(async () => {
   if (filters.value.school !== null) {
-    return await invoke.pathways.list(config.value.creds, filters.value.school)
+    return await invoke.pathways.list(filters.value.school)
   }
   return []
-}, [], { immediate: false, onError: console.log })
+}, [], { immediate: false })
 
 const filters = ref<{school: null | number, pathway: string | null, grade: number | null}>({
   school: null,
@@ -57,7 +50,7 @@ const { isLoading, execute: handleSubmit } = useAsyncState(async () => {
 
     try {
       const { school, pathway, grade } = filters.value
-      const result = await invoke.students.list(config.value.creds, school, pathway, grade)
+      const result = await invoke.students.list(school, pathway, grade)
       students.value = result
       emit('search', result)
     } catch (e) {
@@ -137,8 +130,7 @@ function handleCheck (rowKeys: DataTableRowKey[]) {
           :loading="schoolsLoading"
           filterable
           clearable
-          @update:value="loadPathways"
-          @clear="filters.pathway = null"
+          @update:value="() => {loadPathways(); filters.pathway = null}"
         />
       </n-form-item-gi>
       <n-form-item-gi
