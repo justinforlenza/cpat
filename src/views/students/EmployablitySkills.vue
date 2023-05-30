@@ -129,7 +129,7 @@ const { isLoading, execute: handleSubmit } = useAsyncState(async () => {
       :loading="isLoading"
       @click="handleSubmit"
     >
-      Add Certifications
+      Add Skills
     </n-button>
   </n-space>
 </template>

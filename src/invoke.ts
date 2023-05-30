@@ -49,7 +49,7 @@ const _invoke = {
   students: {
     list: async (schoolId: number | null, pathwayId: string | null, gradeId: number | null): Promise<Student[]> => await invoke('get_students', { schoolId, pathwayId, gradeId }),
     addCertifications: async (students: number[], payload: AddCertification): Promise<void> => { await invoke('bulk_add_certifications', { students, ...payload }) },
-    addSkills: async (students: number[], skillsType: 'employability', payload: AddSkill): Promise<void> => {
+    addSkills: async (students: number[], skillsType: 'employability' | 'technical', payload: AddSkill): Promise<void> => {
       console.log({ students, skillsType, ...payload })
       await invoke('bulk_add_skills', { students, skillsType, ...payload })
     }

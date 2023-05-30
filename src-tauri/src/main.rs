@@ -226,12 +226,9 @@ fn bulk_add_skills(
     for student_id in students {
       std::thread::sleep(std::time::Duration::from_millis(250));
 
-      let result = match skills_type.as_str() {
-          "employability" => cpp::students::emp_profile::add_professional_skills(&client, &student_id, &date, &deadline, &grade_id),
-          _ => {
-            panic!("invalid skill type")
-          }
-      };
+      let result = cpp::students::emp_profile::add_skills(
+        &client, &student_id, &date, &deadline, &grade_id, &skills_type
+      );
 
       match result {
           Ok(()) => pass += 1,

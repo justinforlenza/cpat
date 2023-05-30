@@ -114,19 +114,25 @@ pub fn add_certification (
   Ok(())
 }
 
-pub fn add_professional_skills (
+pub fn add_skills (
   client: &reqwest::blocking::Client, 
   student_id: &i32, 
   date: &String, 
   deadline: &String,
-  grade_id: &i32
+  grade_id: &i32,
+  skills_type: &String
 ) -> Result<(), Box<dyn std::error::Error>> {
   let base_url = format!("https://careerpathways.nyc/Students/{}", student_id);
+
+  let handler = match skills_type.as_str() {
+      "employability" => Ok("ProfSkills"),
+      "technical" => Ok("CTETechSkills"),
+      _ => Err(Error::new("Invalid skills type"))
+  }?;
   
   let query = [
-    ("handler", "ProfSkillsEditRecord"),
-    ("StudentID", &student_id.to_string()),
-    ("AssessmentID", "0")
+    ("handler", &format!("{}EditRecord", handler).to_string()),
+    ("StudentID", &student_id.to_string())
   ];
 
   let csrf_request = client.get(&base_url).query(&query).send()?;
@@ -154,7 +160,11 @@ pub fn add_professional_skills (
 
   let mut body: Vec<(String, String)> = Vec::new();
 
-  let skill_inputs_selector = Selector::parse("*[name^=\"lstProfessionalSkills\"]")?;
+  let skill_inputs_selector = match skills_type.as_str() {
+    "employability" => Ok(Selector::parse("*[name^=\"lstProfessionalSkills\"]")),
+    "technical" => Ok(Selector::parse("*[name^=\"lstTechnicalSkills\"]")),
+    _ => Err(Error::new("Invalid skills type"))
+  }??;
   
   let skill_inputs = csrf_request_page.select(&skill_inputs_selector);
 
@@ -169,14 +179,10 @@ pub fn add_professional_skills (
   body.extend(body_base);
 
   let query = [
-    ("handler", "ProfSkills")
+    ("handler", handler)
   ];
 
-  println!("{:?}", body);
-
-  let req = client.post(&base_url).query(&query).form(&body).send()?;
-
-  println!("{:}", req.text()?);
+  client.post(&base_url).query(&query).form(&body).send()?;
 
   Ok(())
 }
