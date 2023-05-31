@@ -166,7 +166,7 @@ function handleCheck (rowKeys: number[]) {
       :loading="isLoading"
       type="primary"
       size="large"
-      @click="() => handleSubmit"
+      @click="() => handleSubmit()"
     >
       Search
     </n-button>
@@ -178,7 +178,7 @@ function handleCheck (rowKeys: number[]) {
     :data="students"
     :row-key="(row: Student) => row.id"
     max-height="33vh"
-    @update:checked-row-keys="() => handleCheck"
+    @update:checked-row-keys="(rowKeys) => handleCheck(rowKeys as number[])"
   />
 </template>
 

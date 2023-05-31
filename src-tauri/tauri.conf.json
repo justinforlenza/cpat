@@ -15,6 +15,9 @@
       "all": false,
       "shell": {
         "open": true
+      },
+      "app": {
+        "all": false
       }
     },
     "bundle": {

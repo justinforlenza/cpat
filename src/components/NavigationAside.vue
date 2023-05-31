@@ -5,12 +5,15 @@ import { RouterLink } from 'vue-router'
 
 import {
   NLayoutSider, NMenu,
-  NCard, NAvatar, NSpace, NText,
+  NCard, NAvatar, NSpace, NText, NP,
   type MenuOption
 } from 'naive-ui'
 
 import { useConfigStore } from '../store'
 import { storeToRefs } from 'pinia'
+
+import { app } from '@tauri-apps/api'
+import { computedAsync } from '@vueuse/core'
 
 const configStore = useConfigStore()
 
@@ -80,6 +83,8 @@ const menuOptions: MenuOption[] = [
     ]
   }
 ]
+
+const appVersion = computedAsync(app.getVersion, '0.0.0')
 </script>
 
 <template>
@@ -108,5 +113,11 @@ const menuOptions: MenuOption[] = [
         <n-text>{{ config.creds.username }}</n-text>
       </n-space>
     </n-card>
+    <n-p
+      style="text-align: center; margin-top: 8px; font-size: smaller;"
+      depth="3"
+    >
+      CPAT v{{ appVersion }}
+    </n-p>
   </n-layout-sider>
 </template>
