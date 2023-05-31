@@ -104,7 +104,7 @@ watch(config, (value) => {
             v-model:value="formValue.password"
             type="password"
             placeholder="*******"
-            @keydown.enter="() => handleSubmit"
+            @keydown.enter="() => handleSubmit()"
           />
         </n-form-item>
       </n-form>
@@ -116,7 +116,7 @@ watch(config, (value) => {
           type="primary"
           secondary
           :loading="isLoading"
-          @click="() => handleSubmit"
+          @click="() => handleSubmit()"
         >
           Confirm
         </n-button>

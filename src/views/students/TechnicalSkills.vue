@@ -127,7 +127,7 @@ const { isLoading, execute: handleSubmit } = useAsyncState(async () => {
       size="large"
       :disabled="selectedStudents.length === 0"
       :loading="isLoading"
-      @click="() => handleSubmit"
+      @click="() => handleSubmit()"
     >
       Add Skills
     </n-button>

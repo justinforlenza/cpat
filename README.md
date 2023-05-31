@@ -1,4 +1,16 @@
 # CPAT
+<p align="center">
+  <a href="https://github.com/justinforlenza/cpat/actions/workflows/publish.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/justinforlenza/cpat/publish"/>
+  </a>
+  <a href="https://github.com/justinforlenza/cpat/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/justinforlenza/cpat"/>
+  </a>
+  <a href="https://github.com/justinforlenza/cpat/releases/latest">
+    <img src="https://img.shields.io/github/v/release/justinforlenza/cpat?display_name=tag&sort=semver"/>
+  </a>
+</p
+
 The Career Pathways Automation Tool is a powerfull solution developed to address the inherent inefficiencies of the existing Career Pathways Portal website.
 
 Recognizing the limitations and time-consuming processes of the portal, this program aims to streamline tasks and optimize user productivity.
