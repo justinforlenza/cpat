@@ -1,0 +1,18 @@
+version = 1
+
+test_patterns = [
+  "src/**",
+  "src-tauri/**"
+]
+
+[[analyzers]]
+name = "javascript"
+
+  [analyzers.meta]
+  plugins = ["vue"]
+
+[[analyzers]]
+name = "rust"
+
+  [analyzers.meta]
+  msrv = "stable"
