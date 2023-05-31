@@ -90,7 +90,7 @@ const { isLoading, execute: handleSubmit } = useAsyncState(async () => {
       >
         <n-select
           v-model:value="formValues.gradeId"
-          :options="Array(6).fill(0).map((_, index) => ({value: index + 1, label: index+9}))"
+          :options="Array(6).fill(0).map((_, index) => ({value: index + 1, label: (index+9).toString()}))"
           filterable
           clearable
         />
@@ -127,7 +127,7 @@ const { isLoading, execute: handleSubmit } = useAsyncState(async () => {
       size="large"
       :disabled="selectedStudents.length === 0"
       :loading="isLoading"
-      @click="handleSubmit"
+      @click="() => handleSubmit"
     >
       Add Skills
     </n-button>

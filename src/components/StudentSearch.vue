@@ -5,14 +5,14 @@ import {
   NForm, NFormItemGi, NSelect, NButton,
   NGrid, NSpace, NDataTable,
   useMessage,
-  type DataTableColumns, type DataTableRowKey, type FormInst
+  type DataTableColumns, type FormInst
 } from 'naive-ui'
 
 import { useAsyncState } from '@vueuse/core'
 import invoke, { type Student } from '../invoke'
 import { shell } from '@tauri-apps/api'
 
-const emit = defineEmits<{(e: 'search', scholars: Student[]): void, (e: 'checked', checked: DataTableRowKey[]): void}>()
+const emit = defineEmits<{(e: 'search', scholars: Student[]): void, (e: 'checked', checked: number[]): void}>()
 
 const message = useMessage()
 
@@ -64,7 +64,7 @@ const { isLoading, execute: handleSubmit } = useAsyncState(async () => {
 
 const students = ref<Student[]>([])
 
-const checkedRowKeysRef = ref<DataTableRowKey[]>([])
+const checkedRowKeysRef = ref<number[]>([])
 
 const columns: DataTableColumns<Student> = [
   {
@@ -100,7 +100,7 @@ const columns: DataTableColumns<Student> = [
   }
 ]
 
-function handleCheck (rowKeys: DataTableRowKey[]) {
+function handleCheck (rowKeys: number[]) {
   checkedRowKeysRef.value = rowKeys
   emit('checked', rowKeys)
 }
@@ -154,7 +154,7 @@ function handleCheck (rowKeys: DataTableRowKey[]) {
       >
         <n-select
           v-model:value="filters.grade"
-          :options="Array(6).fill(0).map((_, index) => ({value: index + 1, label: index+9}))"
+          :options="Array(6).fill(0).map((_, index) => ({value: index + 1, label: (index+9).toString()}))"
           filterable
           clearable
         />
@@ -166,7 +166,7 @@ function handleCheck (rowKeys: DataTableRowKey[]) {
       :loading="isLoading"
       type="primary"
       size="large"
-      @click="handleSubmit"
+      @click="() => handleSubmit"
     >
       Search
     </n-button>
@@ -178,7 +178,7 @@ function handleCheck (rowKeys: DataTableRowKey[]) {
     :data="students"
     :row-key="(row: Student) => row.id"
     max-height="33vh"
-    @update:checked-row-keys="handleCheck"
+    @update:checked-row-keys="() => handleCheck"
   />
 </template>
 
