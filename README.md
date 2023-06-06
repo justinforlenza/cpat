@@ -1,7 +1,7 @@
 # CPAT
 <p align="center">
   <a href="https://github.com/justinforlenza/cpat/actions/workflows/publish.yml">
-    <img src="https://img.shields.io/github/actions/workflow/status/justinforlenza/cpat/publish"/>
+    <img src="https://img.shields.io/github/actions/workflow/status/justinforlenza/cpat/publish.yml"/>
   </a>
   <a href="https://github.com/justinforlenza/cpat/blob/main/LICENSE">
     <img src="https://img.shields.io/github/license/justinforlenza/cpat"/>
