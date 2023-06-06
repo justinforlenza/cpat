@@ -71,6 +71,11 @@ const { isLoading, execute: handleSubmit } = useAsyncState(async () => {
   immediate: false
 })
 
+function htmlDecode (input: string) {
+  const doc = new DOMParser().parseFromString(input, 'text/html')
+  return doc.documentElement.textContent
+}
+
 </script>
 
 <template>
@@ -100,7 +105,7 @@ const { isLoading, execute: handleSubmit } = useAsyncState(async () => {
       >
         <n-select
           v-model:value="formValues.certificationId"
-          :options="certs.map(s => ({value: s.id, label: s.name}))"
+          :options="certs.map(s => ({value: s.id, label: htmlDecode(s.name) ?? s.name}))"
           :loading="certsIsLoading"
           filterable
           clearable
@@ -114,7 +119,7 @@ const { isLoading, execute: handleSubmit } = useAsyncState(async () => {
       >
         <n-select
           v-model:value="formValues.authorityId"
-          :options="authorities.map(s => ({value: s.id, label: s.name}))"
+          :options="authorities.map(s => ({value: s.id, label: htmlDecode(s.name) ?? s.name}))"
           :loading="authoritiesIsLoading"
           filterable
           clearable

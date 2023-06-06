@@ -77,6 +77,11 @@ const { isLoading, execute: handleSubmit } = useAsyncState(async () => {
   immediate: false
 })
 
+function htmlDecode (input: string) {
+  const doc = new DOMParser().parseFromString(input, 'text/html')
+  return doc.documentElement.textContent
+}
+
 </script>
 
 <template>
@@ -100,13 +105,13 @@ const { isLoading, execute: handleSubmit } = useAsyncState(async () => {
       :x-gap="24"
     >
       <n-form-item-gi
-        :span="6"
+        :span="7"
         label="Course"
         path="courseId"
       >
         <n-select
           v-model:value="formValues.courseId"
-          :options="options.courses.map(s => ({value: s.id, label: s.name}))"
+          :options="options.courses.map(s => ({value: s.id, label: htmlDecode(s.name) ?? s.name}))"
           :loading="optionsIsLoading"
           filterable
           clearable
@@ -120,40 +125,40 @@ const { isLoading, execute: handleSubmit } = useAsyncState(async () => {
       >
         <n-select
           v-model:value="formValues.teacherId"
-          :options="teachers.map(s => ({value: s.id, label: s.name}))"
+          :options="teachers.map(s => ({value: s.id, label: htmlDecode(s.name) ?? s.name}))"
           :loading="teachersIsLoading"
           filterable
           clearable
         />
       </n-form-item-gi>
       <n-form-item-gi
-        :span="4"
+        :span="5"
         label="Year"
         path="yearId"
       >
         <n-select
           v-model:value="formValues.yearId"
-          :options="options.years.map(s => ({value: s.id, label: s.name}))"
+          :options="options.years.map(s => ({value: s.id, label: htmlDecode(s.name) ?? s.name}))"
           :loading="optionsIsLoading"
           filterable
           clearable
         />
       </n-form-item-gi>
       <n-form-item-gi
-        :span="4"
+        :span="3"
         label="Term"
         path="termId"
       >
         <n-select
           v-model:value="formValues.termId"
-          :options="options.terms.map(s => ({value: s.id, label: s.name}))"
+          :options="options.terms.map(s => ({value: s.id, label: htmlDecode(s.name) ?? s.name}))"
           :loading="optionsIsLoading"
           filterable
           clearable
         />
       </n-form-item-gi>
       <n-form-item-gi
-        :span="4"
+        :span="3"
         label="Status"
         path="status"
       >
@@ -172,7 +177,7 @@ const { isLoading, execute: handleSubmit } = useAsyncState(async () => {
       :loading="isLoading"
       @click="() => handleSubmit()"
     >
-      Add Certifications
+      Add Courses
     </n-button>
   </n-space>
 </template>
