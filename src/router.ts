@@ -9,6 +9,7 @@ import EmployabilitySkills from './views/students/EmployablitySkills.vue'
 import TechnicalSkills from './views/students/TechnicalSkills.vue'
 import IndustryCredentials from './views/students/IndustryCredentials.vue'
 import CTECourses from './views/students/CTECourses.vue'
+import TechnicalAssessment from './views/students/TechnicalAssessment.vue'
 
 const routes: RouteRecordRaw[] = [
   { path: '/', component: HomePage, name: 'Home' },
@@ -16,7 +17,8 @@ const routes: RouteRecordRaw[] = [
   { path: '/emp_skills', component: EmployabilitySkills },
   { path: '/tech_skills', component: TechnicalSkills },
   { path: '/credentials', component: IndustryCredentials },
-  { path: '/cte_courses', component: CTECourses }
+  { path: '/cte_courses', component: CTECourses },
+  { path: '/technical_assessment', component: TechnicalAssessment }
 ]
 
 const router = createRouter({

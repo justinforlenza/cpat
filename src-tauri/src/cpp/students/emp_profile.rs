@@ -24,6 +24,14 @@ pub struct CTECourseOptions {
   years: Vec<SelectOption>
 }
 
+#[derive(serde::Serialize, serde::Deserialize, Default, Clone)]
+pub struct TechnicalAssessment {
+  student_id: i32,
+  score: String,
+  status: String,
+  date: String
+}
+
 
 pub fn list_certifications (client: reqwest::blocking::Client, student_id: i32) -> Result<Vec<Certification>, Box<dyn std::error::Error>> {
   let query = [
@@ -318,6 +326,50 @@ pub fn add_course (
 
   let query = [
     ("handler", "CTECourse")
+  ];
+
+  client.post(&base_url).query(&query).form(&body).send()?;
+
+  Ok(())
+}
+
+pub fn add_assessment (
+  client: &reqwest::blocking::Client,
+  part: &String,
+  assessment: &TechnicalAssessment,
+) -> Result<(), Box<dyn std::error::Error>> {
+  let base_url = format!("https://careerpathways.nyc/Students/{}", assessment.student_id);
+  
+  let query: [(&str, &str); 2] = [
+    ("handler", "TechAssessmentsEditRecord"),
+    ("StudentID", &assessment.student_id.to_string()),
+  ];
+
+  let csrf_request = client.get(&base_url).query(&query).send()?;
+
+  let csrf_request_text = csrf_request.text()?;
+
+  let csrf_request_page = Html::parse_document(&csrf_request_text);
+
+  let csrf_selector = Selector::parse("input[name=__RequestVerificationToken]")?;
+
+  let csrf_input = csrf_request_page.select(&csrf_selector).last().ok_or(Error::new("Unable to load CSRF token"))?;
+
+  let csrf_token = csrf_input.value().attr("value").ok_or(Error::new("Unable to load CSRF token"))?;
+
+  let body = [
+    ("PageAction", "NewRecord"),
+    ("Id", "0"),
+    ("StudentId", &assessment.student_id.to_string()),
+    ("Type", &part.to_string()),
+    ("AssessmentDate", &assessment.date.to_string()),
+    ("Score", &assessment.score.to_string()),
+    ("Status", &assessment.status.to_string()),
+    ("__RequestVerificationToken", &csrf_token.to_string()),
+  ];
+
+  let query = [
+    ("handler", "TechAssessments")
   ];
 
   client.post(&base_url).query(&query).form(&body).send()?;
