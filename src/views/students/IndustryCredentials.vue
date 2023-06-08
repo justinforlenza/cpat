@@ -16,7 +16,7 @@ import invoke, { AddCertification, type Student } from '../../invoke'
 
 const message = useMessage()
 
-const selectedStudents = ref<number[]>([96665, 3, 4, 5, 6])
+const selectedStudents = ref<number[]>([])
 
 const students = ref<Student[]>([])
 
