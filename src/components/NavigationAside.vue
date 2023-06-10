@@ -79,6 +79,17 @@ const menuOptions: MenuOption[] = [
             { default: () => 'CTE Courses' }
           ),
         key: 'cte_courses'
+      },
+      {
+        label: () =>
+          h(
+            RouterLink,
+            {
+              to: '/technical_assessment'
+            },
+            { default: () => 'Technical Assessment' }
+          ),
+        key: 'technical_assessment'
       }
     ]
   }

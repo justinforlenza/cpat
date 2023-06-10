@@ -46,6 +46,13 @@ export interface AddCourse {
   termId: string | null
 }
 
+export interface AddAssessment {
+  student_id: string
+  score: string
+  status: string
+  date: string
+}
+
 const _invoke = {
   schools: {
     list: async (): Promise<School[]> => await invoke('get_schools')
@@ -59,7 +66,8 @@ const _invoke = {
     addSkills: async (students: number[], skillsType: 'employability' | 'technical', payload: AddSkill): Promise<void> => {
       await invoke('bulk_add_skills', { students, skillsType, ...payload })
     },
-    addCourses: async (students: number[], payload: AddCourse): Promise<void> => { await invoke('bulk_add_courses', { students, ...payload }) }
+    addCourses: async (students: number[], payload: AddCourse): Promise<void> => { await invoke('bulk_add_courses', { students, ...payload }) },
+    addAssesments: async (part: string, assessments: AddAssessment[]): Promise<void> => { await invoke('bulk_add_assessments', { part, assessments }) }
   },
   certifications: {
     list: async (studentId: number): Promise<SelectOption[]> => await invoke('get_certifications', { studentId }),

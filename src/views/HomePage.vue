@@ -28,7 +28,3 @@ import { NGradientText, NAlert, NP, NSpace } from 'naive-ui'
     </n-alert>
   </n-space>
 </template>
-
-<style>
-
-</style>

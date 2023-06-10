@@ -47,7 +47,8 @@ fn main() {
           get_schools, get_pathways, get_students,
           get_certifications, get_certification_authorities, bulk_add_certifications,
           bulk_add_skills,
-          get_course_options, get_teachers, bulk_add_courses
+          get_course_options, get_teachers, bulk_add_courses,
+          bulk_add_assessments
         ])
         .setup(|app| {
 
@@ -311,6 +312,50 @@ fn bulk_add_courses(
       let result = cpp::students::emp_profile::add_course(
         &client, &student_id, &course_id, &teacher_id, &term_id, &year_id, &status
       );
+
+      match result {
+          Ok(()) => pass += 1,
+          Err(..) => fail += 1
+      };
+
+      app_handle.emit_all("task_progress", ProgressPayload {
+        fail,
+        pass,
+        total
+      }).expect("Unable to emit event");
+    }
+
+    app_handle.emit_all("task_stop", ()).expect("Unable to emit message");
+  });
+
+  Ok(())
+}
+
+#[tauri::command]
+fn bulk_add_assessments(
+  assessments: Vec<cpp::students::emp_profile::TechnicalAssessment>,
+  part: String,
+  state: tauri::State<ConfigState>,
+  app_handle: tauri::AppHandle
+) -> Result<(), Error> {
+  let creds = state.0.lock().unwrap().creds.clone();
+  let client = cpp::create_client(creds.username.expect("invalid creds"), creds.password.expect("invalid creds"))?;
+
+  std::thread::spawn(move || {
+    let mut fail = 0;
+    let mut pass = 0;
+    let total = assessments.len().try_into().expect("failed to convert length");
+
+    app_handle.emit_all("task_start", ProgressPayload {
+      fail,
+      pass,
+      total
+    }).expect("Unable to emit message");
+
+    for assessment in assessments {
+      std::thread::sleep(std::time::Duration::from_millis(250));
+
+      let result = cpp::students::emp_profile::add_assessment(&client, &part, &assessment);
 
       match result {
           Ok(()) => pass += 1,
