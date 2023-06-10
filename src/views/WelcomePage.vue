@@ -57,6 +57,3 @@ const handleUpdate = () => {
     </n-alert>
   </n-space>
 </template>
-
-<style>
-</style>
