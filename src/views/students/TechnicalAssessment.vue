@@ -30,6 +30,7 @@ const fields: Field<AddAssessment>[] = [
 ]
 
 async function handleSubmit (e: Record<string, AddAssessment>) {
+  showModal.value = false
   const data = Object.keys(e).map(k => ({
     ...e[k],
     student_id: parseInt(k, 10)
