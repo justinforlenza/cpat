@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, h } from 'vue'
+import { ref, h, watch } from 'vue'
 
 import {
   NForm, NFormItemGi, NSelect, NButton,
@@ -43,6 +43,11 @@ const rules = {
     message: 'Pathway is required'
   }
 }
+
+watch(filters, (newValue, oldValue) => {
+  checkedRowKeysRef.value = []
+  emit('checked', [])
+}, { deep: true })
 
 const { isLoading, execute: handleSubmit } = useAsyncState(async () => {
   if (formRef.value !== null) {
